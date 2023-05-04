@@ -16,7 +16,7 @@ const userSchema = new mongoose.Schema({
         min: 3,
         max: 20
     },
-     userName: {
+    userName: {
         type: String,
         required: true,
         trim: true,
@@ -35,35 +35,41 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-     role: {
+    role: {
         type: String,
         enum: ["user", "admin"],
         default: "user"
     },
-     contactNumber: {
+    contactNumber: {
         type: String,
         required: true,
         trim: true,
         unique: true,
         length: 10
     },
-     profilePicture: {
+    profilePicture: {
         type: String
     },
 
 
 },
- { timestamps: true });
+    { timestamps: true });
 
 userSchema.virtual("password").set(function (password) {
     // Store hash in your password DB.
     this.hash_password = bcrypt.hashSync(password, 10)
 });
-userSchema.method = {
-    Authenticate: async function (password) {
-        return await bcrypt.compare(password, this.hash_password)
+userSchema.virtual("fullName").get(function () {
+    return `${this.fastName} ${this.lastName}`
+})
+
+
+userSchema.methods = {
+    Authenticate: function (password) {
+        return bcrypt.compareSync(password, this.hash_password)
     }
 }
+
 
 const User = mongoose.model("user", userSchema);
 
